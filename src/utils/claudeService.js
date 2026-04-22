@@ -45,18 +45,33 @@ const TOKENS = {
 // ============================================================
 async function callClaude(system, user, maxTokens) {
   const body = { model: MODEL, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] };
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    const base = (err && err.message) || 'Request failed';
+    const hint = ON_VERCEL
+      ? 'Confirm Vercel has ANTHROPIC_API_KEY and the latest deploy (proxy at /api/claude).'
+      : 'Use a local server (vercel dev) with .env, or open the deployed site; file:// and blocked requests will fail.';
+    throw new Error(base + ' ' + hint);
+  }
   if (!res.ok) {
     let msg = 'API error ' + res.status;
-    try { msg = (await res.json())?.error?.message || msg; } catch (_) {}
+    try {
+      const j = await res.json();
+      msg = j?.error?.message || (typeof j?.error === 'string' ? j.error : msg);
+    } catch (_) {}
     throw new Error(msg);
   }
   const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
+  if (data.error) {
+    const em = data.error;
+    throw new Error(typeof em === 'string' ? em : (em.message || 'API error'));
+  }
   if (!data.content?.length) throw new Error('Empty response from Claude.');
   if (data.stop_reason === 'max_tokens') {
     console.warn('[CS] max_tokens hit — attempting JSON repair');

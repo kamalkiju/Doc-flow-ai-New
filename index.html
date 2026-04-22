@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com; worker-src blob:;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://cdnjs.cloudflare.com; worker-src 'self' blob: https://cdnjs.cloudflare.com;" />
   <title>DocFlow AI — Document Intelligence Platform</title>
   <link rel="stylesheet" href="src/css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
@@ -41,8 +41,8 @@
       <div class="u-icon">📄</div>
       <div class="u-title">Drop your document here</div>
       <div class="u-sub">Supports PDF, DOCX, TXT, and MD files</div>
-      <button class="u-btn" id="chooseBtn">⬆ Choose File</button>
-      <input type="file" id="fi" accept=".pdf,.doc,.docx,.txt,.md,.csv" aria-label="Upload document" />
+      <input type="file" id="fi" class="file-input" accept=".pdf,.doc,.docx,.txt,.md,.csv" aria-label="Upload document" />
+      <label for="fi" class="u-btn" id="chooseBtn">⬆ Choose File</label>
       <div class="ftypes">
         <span class="fbadge">PDF</span>
         <span class="fbadge">DOCX</span>

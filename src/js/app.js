@@ -52,7 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
   bindGenerateButton();
   bindCopyButtons();
   bindClearButton();
-  $('chooseBtn').addEventListener('click', () => fi.click());
+  // "Choose file" is <label for="fi"> — no JS needed. Zone click opens dialog for empty-area taps.
+  uz.addEventListener('click', e => {
+    if (e.target.closest('label[for="fi"]') || e.target === fi) return;
+    e.preventDefault();
+    fi.click();
+  });
 });
 
 // ── Drag & drop ───────────────────────────────────────────────────────────────
@@ -66,7 +71,12 @@ function bindUploadZone() {
     if (file) handleFile(file);
   });
   fi.addEventListener('change', e => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
+    const f = e.target.files?.[0];
+    if (f) {
+      handleFile(f).finally(() => {
+        e.target.value = '';
+      });
+    }
   });
 }
 
