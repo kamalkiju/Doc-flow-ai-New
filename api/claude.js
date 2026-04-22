@@ -18,19 +18,18 @@
  */
 
 export default async function handler(req, res) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // CORS headers — allow requests from your Vercel domain
+  // CORS (needed for preflight; same-origin on Vercel is fine but this keeps OPTIONS valid)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight
+  // Preflight must succeed before JSON POST; never return 405 for OPTIONS
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(204).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: { message: 'Method not allowed' } });
   }
 
   // Read API key from environment variable (set in Vercel dashboard)
