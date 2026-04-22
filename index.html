@@ -137,7 +137,18 @@
     </div>
   </main>
 
-  <!-- Scripts -->
-  <script type="module" src="src/js/app.js"></script>
+  <!-- Scripts: dynamic import so we can show an error if the app module or its imports fail to load (404, offline, CORS) -->
+  <script type="module">
+    import(new URL('src/js/app.js', import.meta.url)).catch((err) => {
+      console.error('[DocFlow] App failed to load:', err);
+      const eb = document.getElementById('eb');
+      if (eb) {
+        eb.classList.add('show');
+        eb.innerHTML =
+          'The app could not start (JavaScript did not load). If you opened this as a file on your computer, use a local server instead, or use the live Vercel URL. ' +
+          'Press F12 → Console for details.';
+      }
+    });
+  </script>
 </body>
 </html>

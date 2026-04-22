@@ -24,28 +24,42 @@ let extractedText = '';
 let selected = new Set(['architecture', 'journey', 'competitors', 'recommendations']);
 let stepTimer = null;
 
-// ── DOM references ────────────────────────────────────────────────────────────
+// ── DOM references (resolved in init so nulls are never used if markup changes) ─
 const $ = id => document.getElementById(id);
-const uz     = $('uz');
-const fi     = $('fi');
-const fp     = $('fp');
-const pp     = $('pp');
-const ppText = $('pp-text');
-const ficon  = $('ficon');
-const fname  = $('fname');
-const fmeta  = $('fmeta');
-const fstatus= $('fstatus');
-const ti     = $('ti');
-const gb     = $('gb');
-const lb     = $('lb');
-const eb     = $('eb');
-const rw     = $('rw');
-const sr     = $('sr');
-const tabs   = $('tabs');
-const panels = $('panels');
+let uz, fi, fp, pp, ppText, ficon, fname, fmeta, fstatus, ti, gb, lb, eb, rw, sr, tabs, panels;
+
+function resolveDom() {
+  uz = $('uz');
+  fi = $('fi');
+  fp = $('fp');
+  pp = $('pp');
+  ppText = $('pp-text');
+  ficon = $('ficon');
+  fname = $('fname');
+  fmeta = $('fmeta');
+  fstatus = $('fstatus');
+  ti = $('ti');
+  gb = $('gb');
+  lb = $('lb');
+  eb = $('eb');
+  rw = $('rw');
+  sr = $('sr');
+  tabs = $('tabs');
+  panels = $('panels');
+}
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
+  resolveDom();
+  if (!fi || !uz || !fp || !pp || !ppText || !ficon || !fname || !fmeta || !fstatus) {
+    console.error('[DocFlow] Missing required elements', { fi: !!fi, uz: !!uz, fp: !!fp, pp: !!pp });
+    if (eb) {
+      eb.classList.add('show');
+      eb.textContent = 'Page structure error: file upload UI is missing. Please refresh or redeploy.';
+    }
+    return;
+  }
+
   bindUploadZone();
   bindOptions();
   bindTextArea();
@@ -56,9 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
   uz.addEventListener('click', e => {
     if (e.target.closest('label.file-choose') || e.target === fi) return;
     e.preventDefault();
-    if (fi) fi.click();
+    fi.click();
   });
-});
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
 
 // ── Drag & drop ───────────────────────────────────────────────────────────────
 function bindUploadZone() {
@@ -70,28 +86,36 @@ function bindUploadZone() {
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
   });
+  // currentTarget = input (stable). Avoid e.target in async follow-up; defer clearing for mobile Safari.
   fi.addEventListener('change', e => {
-    const f = e.target.files?.[0];
-    if (f) {
-      handleFile(f).finally(() => {
-        e.target.value = '';
-      });
-    }
+    const input = e.currentTarget;
+    const f = input.files && input.files[0];
+    if (!f) return;
+    handleFile(f).finally(() => {
+      setTimeout(() => {
+        try { input.value = ''; } catch (_) { /* old IE */ }
+      }, 0);
+    });
   });
 }
 
 // ── File handling ─────────────────────────────────────────────────────────────
 async function handleFile(file) {
+  if (!fp || !pp || !ppText || !ficon || !fname || !fmeta) return;
+  hideErr();
   // Reset previous state
   extractedText = '';
   pp.classList.remove('show');
 
-  // Show preview card immediately
+  // Show preview card immediately (before any async) so the first step always appears
   ficon.textContent = getFileIcon(file.name);
   fname.textContent  = file.name;
   fmeta.textContent  = formatFileSize(file.size) + ' · ' + file.name.split('.').pop().toUpperCase();
   setStatus('reading', 'Reading file...');
   fp.classList.add('show');
+  requestAnimationFrame(() => {
+    try { fp.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) { fp.scrollIntoView(); }
+  });
 
   try {
     const text = await parseDocument(file);
@@ -112,6 +136,7 @@ async function handleFile(file) {
 }
 
 function showPreview(text) {
+  if (!ppText || !pp) return;
   const preview = text.slice(0, 500) + (text.length > 500 ? '\n\n[... preview truncated ...]' : '');
   ppText.textContent = preview;
   pp.classList.add('show');
@@ -129,6 +154,7 @@ function bindClearButton() {
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 function setStatus(type, msg) {
+  if (!fstatus) return;
   fstatus.className = 'fstatus ' + type;
   fstatus.textContent = msg;
 }
@@ -192,10 +218,12 @@ function getContent() {
 
 // ── Error helpers ─────────────────────────────────────────────────────────────
 function showErr(msg) {
+  if (!eb) return;
   eb.innerHTML = msg; // msg is controlled by app code, not raw user input
   eb.classList.add('show');
 }
 function hideErr() {
+  if (!eb) return;
   eb.classList.remove('show');
 }
 
