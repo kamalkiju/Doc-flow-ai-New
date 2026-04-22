@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com; worker-src blob:;" />
+  <title>DocFlow AI — Document Intelligence Platform</title>
+  <link rel="stylesheet" href="src/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Mammoth DOCX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      DocFlow AI
+    </div>
+    <span class="nbadge">Powered by Claude</span>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="chip"><div class="dot"></div>AI Document Intelligence</div>
+      <h1>Turn any document into<br /><span>architecture &amp; insights</span></h1>
+      <p>Upload a PDF, Word doc, or text file — get AI-generated architecture diagrams, user journeys, and competitor analysis instantly.</p>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uz">
+      <div class="u-icon">📄</div>
+      <div class="u-title">Drop your document here</div>
+      <div class="u-sub">Supports PDF, DOCX, TXT, and MD files</div>
+      <button class="u-btn" id="chooseBtn">⬆ Choose File</button>
+      <input type="file" id="fi" accept=".pdf,.doc,.docx,.txt,.md,.csv" aria-label="Upload document" />
+      <div class="ftypes">
+        <span class="fbadge">PDF</span>
+        <span class="fbadge">DOCX</span>
+        <span class="fbadge">TXT</span>
+        <span class="fbadge">MD</span>
+        <span class="fbadge">CSV</span>
+      </div>
+    </div>
+
+    <!-- File Preview -->
+    <div class="fprev" id="fp" role="status" aria-live="polite">
+      <div class="ficon" id="ficon">📎</div>
+      <div style="flex:1">
+        <div class="fname" id="fname">—</div>
+        <div class="fmeta" id="fmeta">—</div>
+        <span class="fstatus reading" id="fstatus">Reading...</span>
+      </div>
+      <button class="rm" id="clearBtn" aria-label="Remove file">✕</button>
+    </div>
+
+    <!-- Parsed Preview -->
+    <div class="parsed-preview" id="pp" aria-live="polite">
+      <div class="parsed-label">Extracted text preview</div>
+      <div id="pp-text"></div>
+    </div>
+
+    <div class="or-div">or paste your document text below</div>
+
+    <!-- Text Input -->
+    <div class="ta-wrap">
+      <textarea
+        id="ti"
+        aria-label="Document text input"
+        placeholder="Paste your client brief, product requirements, business proposal, or any text here...&#10;&#10;Example: 'We are building a B2B SaaS platform for logistics companies in Southeast Asia...'"
+      ></textarea>
+    </div>
+
+    <!-- Char count -->
+    <div class="char-row">
+      <span id="char-info" style="color:var(--text3)">No content yet</span>
+      <span id="char-ok"></span>
+    </div>
+
+    <!-- Options -->
+    <div class="sec-lbl">Select analyses to generate</div>
+    <div class="opts" id="opts">
+      <div class="opt on" data-opt="architecture">
+        <div class="ck" aria-hidden="true">✓</div>
+        <div><div class="ot">Architecture Flow</div><div class="od">System components, data flow, and technical structure</div></div>
+      </div>
+      <div class="opt on" data-opt="journey">
+        <div class="ck" aria-hidden="true">✓</div>
+        <div><div class="ot">User Journey Map</div><div class="od">Step-by-step experience with emotions and pain points</div></div>
+      </div>
+      <div class="opt on" data-opt="competitors">
+        <div class="ck" aria-hidden="true">✓</div>
+        <div><div class="ot">Competitor Analysis</div><div class="od">Market landscape, strengths, weaknesses, opportunities</div></div>
+      </div>
+      <div class="opt on" data-opt="recommendations">
+        <div class="ck" aria-hidden="true">✓</div>
+        <div><div class="ot">UX Recommendations</div><div class="od">Prioritized design improvements and strategic suggestions</div></div>
+      </div>
+    </div>
+
+    <button class="gen-btn" id="gb" aria-label="Generate AI Analysis">⚡ Generate AI Analysis</button>
+    <div class="err" id="eb" role="alert" aria-live="assertive"></div>
+
+    <!-- Loading -->
+    <div class="lb" id="lb" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="lb-title">Analyzing your document...</div>
+      <div class="lb-sub">Claude is reading and understanding your content</div>
+      <div class="lsteps">
+        <div class="ls" id="ls1"><div class="ld"></div>Parsing and cleaning document text</div>
+        <div class="ls" id="ls2"><div class="ld"></div>Identifying system architecture</div>
+        <div class="ls" id="ls3"><div class="ld"></div>Mapping user journey and personas</div>
+        <div class="ls" id="ls4"><div class="ld"></div>Researching competitor landscape</div>
+        <div class="ls" id="ls5"><div class="ld"></div>Writing UX recommendations</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="rw" id="rw" role="region" aria-label="Analysis results">
+      <div class="rh">
+        <div class="rt">Analysis Complete ✓</div>
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="sr" id="sr"></div>
+      <div id="panels"></div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="src/js/app.js"></script>
+</body>
+</html>
