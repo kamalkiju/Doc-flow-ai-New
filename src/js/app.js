@@ -15,9 +15,9 @@
  *  - Copy-to-clipboard uses the Clipboard API with a try/catch
  */
 
-import { parseDocument, truncateForAPI, getFileIcon, formatFileSize } from './utils/docParser.js';
-import { runAnalysis } from './utils/claudeService.js';
-import { buildResults } from './utils/renderer.js';
+import { parseDocument, truncateForAPI, getFileIcon, formatFileSize } from '../utils/docParser.js';
+import { runAnalysis } from '../utils/claudeService.js';
+import { buildResults } from '../utils/renderer.js';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let extractedText = '';
