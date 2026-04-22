@@ -74,7 +74,13 @@ function initApp() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+// Because this module is loaded via a dynamic import(), DOMContentLoaded
+// may have already fired by the time this code runs. Check readyState.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 // ── Drag & drop ───────────────────────────────────────────────────────────────
 function bindUploadZone() {
