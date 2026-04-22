@@ -41,16 +41,16 @@ export function renderArchitecture(data) {
 
   // Fallback: if Claude returned nothing useful, show a clear message
   if (sections.length === 0) {
-    return \`<div class="rc">
+    return `<div class="rc">
       <div class="rch"><div class="rct">Information Architecture</div></div>
       <div class="rcb">
-        \${arch.iaDescription ? \`<div style="font-size:14px;line-height:1.8;color:var(--text2);margin-bottom:16px">\${esc(arch.iaDescription)}</div>\` : ''}
+        ${arch.iaDescription ? `<div style="font-size:14px;line-height:1.8;color:var(--text2);margin-bottom:16px">${esc(arch.iaDescription)}</div>` : ''}
         <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:var(--rs);padding:14px 18px;font-size:13px;color:var(--amber)">
           The document did not contain enough screen-level detail to build a full IA map.
           Try uploading a document that describes specific screens, pages, or UI components.
         </div>
       </div>
-    </div>\`;
+    </div>`;
   }
 
   const screenTypeColors = {
