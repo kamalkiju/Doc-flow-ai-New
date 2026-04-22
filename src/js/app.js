@@ -119,6 +119,9 @@ async function handleFile(file) {
   fmeta.textContent  = formatFileSize(file.size) + ' · ' + file.name.split('.').pop().toUpperCase();
   setStatus('reading', 'Reading file...');
   fp.classList.add('show');
+  // Belt-and-braces: also set inline style so the card appears even if CSS class toggling has any issue
+  fp.style.display = 'flex';
+  fp.style.borderColor = 'rgba(123,110,246,0.35)';
   requestAnimationFrame(() => {
     try { fp.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) { fp.scrollIntoView(); }
   });
@@ -134,6 +137,9 @@ async function handleFile(file) {
   } catch (err) {
     console.error('[App] File parse error:', err);
     setStatus('err', err.message);
+    // Keep the preview card visible so the user sees the error status
+    fp.classList.add('show');
+    fp.style.display = 'flex';
     showErr(
       `Could not read "${file.name}". ${err.message}<br>` +
       `<small>Try saving as .txt and uploading again, or paste the text below.</small>`
@@ -146,13 +152,18 @@ function showPreview(text) {
   const preview = text.slice(0, 500) + (text.length > 500 ? '\n\n[... preview truncated ...]' : '');
   ppText.textContent = preview;
   pp.classList.add('show');
+  // Belt-and-braces inline style so the parsed preview always appears
+  pp.style.display = 'block';
 }
 
 function bindClearButton() {
   $('clearBtn').addEventListener('click', () => {
     extractedText = '';
     fp.classList.remove('show');
+    fp.style.display = '';
+    fp.style.borderColor = '';
     pp.classList.remove('show');
+    pp.style.display = '';
     fi.value = '';
     updateCharCount();
   });
