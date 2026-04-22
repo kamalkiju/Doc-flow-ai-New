@@ -41,8 +41,10 @@
       <div class="u-icon">📄</div>
       <div class="u-title">Drop your document here</div>
       <div class="u-sub">Supports PDF, DOCX, TXT, and MD files</div>
-      <input type="file" id="fi" class="file-input" accept=".pdf,.doc,.docx,.txt,.md,.csv" aria-label="Upload document" />
-      <label for="fi" class="u-btn" id="chooseBtn">⬆ Choose File</label>
+      <label class="u-btn file-choose" id="chooseBtn">
+        <input type="file" id="fi" class="file-input" accept=".pdf,.doc,.docx,.txt,.md,.csv" aria-label="Upload document" title="Choose file" />
+        <span>⬆ Choose File</span>
+      </label>
       <div class="ftypes">
         <span class="fbadge">PDF</span>
         <span class="fbadge">DOCX</span>

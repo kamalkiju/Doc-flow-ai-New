@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
   bindGenerateButton();
   bindCopyButtons();
   bindClearButton();
-  // "Choose file" is <label for="fi"> — no JS needed. Zone click opens dialog for empty-area taps.
+  // Zone (outside the Choose File label) still opens the picker; label contains real file input on top of button.
   uz.addEventListener('click', e => {
-    if (e.target.closest('label[for="fi"]') || e.target === fi) return;
+    if (e.target.closest('label.file-choose') || e.target === fi) return;
     e.preventDefault();
-    fi.click();
+    if (fi) fi.click();
   });
 });
 
